@@ -1,0 +1,52 @@
+#include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+
+int readNumbers(char *input) {
+    if (scanf("%13s", input) != 1) return 1;
+    const unsigned long long len = strlen(input);
+    if (len > 12) return 1;
+    for (unsigned long long i = 0; i<len; i++) {
+        if (!isdigit(input[i])) return 1;
+    }
+    return 0;
+}
+
+int readResult(int *result, char* requestType) {
+    char c;
+    int res = scanf(" %c %d%c",requestType, result,&c);
+    printf("C: \"%c\"\n", c);
+    if (res == EOF) return -1;
+    if (res != 3 || (*requestType!='?' && *requestType!='#') || c!='\n') return 1;
+    return 0;
+}
+
+int main(void) {
+    // premenne
+    char requestType, input[14];
+    int result;
+
+    // Nacitanie cislic
+    printf("Cislice:\n");
+    if (readNumbers(input)) {
+        printf("Nespravny vstup.");
+        return 1;
+    }
+
+    // Nacitanie a spracovanie problemov
+    printf("Problemy:\n");
+    int scanRes;
+    while ((scanRes = readResult(&result, &requestType))==0) {
+        // Debug vypis
+        printf("Zadane cisla %s\n", input);
+        printf("Vysledok %d\n", result);
+        printf("Typ: %c\n", requestType);
+
+        // Funkcia na spracovanie vstupov
+    }
+    if (scanRes != -1) {
+        printf("Nespravny vstup.");
+        return 1;
+    }
+    return 0;
+}
