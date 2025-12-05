@@ -28,39 +28,36 @@ void findAllCombinations(char *beginning, char *rest) {
         printf("%s%c*%c\n", beginning, rest[0], rest[1]);
         printf("%s%c%c\n", beginning, rest[0], rest[1]);
     } else {
-        char tmp[25];
-        strncpy(tmp, beginning, 2);
-        unsigned long beginningLen = strlen(tmp);
+        // zobrat prvy znak z restu, pripojit ho k begginingu, zan pripojit jedno
+        // zo znamienok a poslat do rekurzie spolu s rest +1
 
-        // scitanie
-        tmp[beginningLen] = rest[0];
-        tmp[beginningLen+1] = '+';
-        tmp[beginningLen+2] = '\0';
-        printf("Doterajsi string: %s\n", tmp);
-        printf("Zbytok: %s\n", rest+1);
+        char tmp[25];
+        unsigned long begLen = strlen(beginning);
+
+        strcpy(tmp, beginning);
+        tmp[begLen] = rest[0];
+        tmp[begLen+1] = '+';
+        tmp[begLen+2] = '\0';
         findAllCombinations(tmp, rest+1);
 
-        // odcitanie
-        tmp[beginningLen+1] = '-';
-        tmp[beginningLen+2] = '\0';
-        printf("Doterajsi string: %s\n", tmp);
-        printf("Zbytok: %s\n", rest+1);
+        strcpy(tmp, beginning);
+        tmp[begLen] = rest[0];
+        tmp[begLen+1] = '-';
+        tmp[begLen+2] = '\0';
+        findAllCombinations(tmp, rest+1);
 
-        // nasobenie
-        tmp[beginningLen+1] = '*';
-        tmp[beginningLen+2] = '\0';
-        printf("Doterajsi string: %s\n", tmp);
-        printf("Zbytok: %s\n", rest+1);
+        strcpy(tmp, beginning);
+        tmp[begLen] = rest[0];
+        tmp[begLen+1] = '*';
+        tmp[begLen+2] = '\0';
+        findAllCombinations(tmp, rest+1);
 
-        // medzera
-        tmp[beginningLen+1] = '\0';
-        printf("Doterajsi string: %s\n", tmp);
-        printf("Zbytok: %s\n", rest+1);
+        strcpy(tmp, beginning);
+        tmp[begLen] = rest[0];
+        //tmp[begLen+1] = '_';
+        tmp[begLen+1] = '\0';
+        findAllCombinations(tmp, rest+1);
 
-
-        //printf("DEBUG: %s\n", tmp);
-        //printf("STRLEN: %lu\n", strlen(tmp));
-        //findAllCombinations(, rest+1);
     }
 };
 
@@ -81,9 +78,9 @@ int main(void) {
     int scanRes;
     while ((scanRes = readResult(&result, &requestType))==0) {
         // Debug vypis
-        printf("===========\nZadane cisla %s\n", input);
-        printf("Vysledok %d\n", result);
-        printf("Typ: %c\n\n", requestType);
+        //printf("===========\nZadane cisla %s\n", input);
+        //printf("Vysledok %d\n", result);
+        //printf("Typ: %c\n\n", requestType);
 
         // Funkcia na spracovanie vstupov
         char test[2]="";
