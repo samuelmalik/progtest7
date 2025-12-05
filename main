@@ -21,6 +21,49 @@ int readResult(int *result, char* requestType) {
     return 0;
 }
 
+void findAllCombinations(char *beginning, char *rest) {
+    if (strlen(rest) == 2) {
+        printf("%s%c+%c\n", beginning, rest[0], rest[1]);
+        printf("%s%c-%c\n", beginning, rest[0], rest[1]);
+        printf("%s%c*%c\n", beginning, rest[0], rest[1]);
+        printf("%s%c%c\n", beginning, rest[0], rest[1]);
+    } else {
+        char tmp[25];
+        strncpy(tmp, beginning, 2);
+        unsigned long beginningLen = strlen(tmp);
+
+        // scitanie
+        tmp[beginningLen] = rest[0];
+        tmp[beginningLen+1] = '+';
+        tmp[beginningLen+2] = '\0';
+        printf("Doterajsi string: %s\n", tmp);
+        printf("Zbytok: %s\n", rest+1);
+        findAllCombinations(tmp, rest+1);
+
+        // odcitanie
+        tmp[beginningLen+1] = '-';
+        tmp[beginningLen+2] = '\0';
+        printf("Doterajsi string: %s\n", tmp);
+        printf("Zbytok: %s\n", rest+1);
+
+        // nasobenie
+        tmp[beginningLen+1] = '*';
+        tmp[beginningLen+2] = '\0';
+        printf("Doterajsi string: %s\n", tmp);
+        printf("Zbytok: %s\n", rest+1);
+
+        // medzera
+        tmp[beginningLen+1] = '\0';
+        printf("Doterajsi string: %s\n", tmp);
+        printf("Zbytok: %s\n", rest+1);
+
+
+        //printf("DEBUG: %s\n", tmp);
+        //printf("STRLEN: %lu\n", strlen(tmp));
+        //findAllCombinations(, rest+1);
+    }
+};
+
 int main(void) {
     // premenne
     char requestType, input[14];
@@ -38,11 +81,13 @@ int main(void) {
     int scanRes;
     while ((scanRes = readResult(&result, &requestType))==0) {
         // Debug vypis
-        printf("Zadane cisla %s\n", input);
+        printf("===========\nZadane cisla %s\n", input);
         printf("Vysledok %d\n", result);
-        printf("Typ: %c\n", requestType);
+        printf("Typ: %c\n\n", requestType);
 
         // Funkcia na spracovanie vstupov
+        char test[2]="";
+        findAllCombinations(test, input);
     }
     if (scanRes != -1) {
         printf("Nespravny vstup.");
