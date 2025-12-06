@@ -15,7 +15,7 @@ int readNumbers(char *input) {
 int readResult(int *result, char* requestType) {
     char c;
     int res = scanf(" %c %d%c",requestType, result,&c);
-    printf("C: \"%c\"\n", c);
+    //printf("C: \"%c\"\n", c);
     if (res == EOF) return -1;
     if (res != 3 || (*requestType!='?' && *requestType!='#') || c!='\n') return 1;
     return 0;
@@ -23,14 +23,34 @@ int readResult(int *result, char* requestType) {
 
 void findAllCombinations(char *beginning, char *rest) {
     if (strlen(rest) == 2) {
-        printf("%s%c+%c\n", beginning, rest[0], rest[1]);
-        printf("%s%c-%c\n", beginning, rest[0], rest[1]);
-        printf("%s%c*%c\n", beginning, rest[0], rest[1]);
-        printf("%s%c%c\n", beginning, rest[0], rest[1]);
-    } else {
-        // zobrat prvy znak z restu, pripojit ho k begginingu, zan pripojit jedno
-        // zo znamienok a poslat do rekurzie spolu s rest +1
+        char final[25];
+        unsigned long finLen = strlen(beginning);
+        strcpy(final, beginning);
+        final[finLen] = rest[0];
+        final[finLen + 2] = rest[1];
+        final[finLen + 3] = '\0';
 
+        //printf("\nPrinting new way:\n");
+
+        final[finLen + 1] = '+';
+        printf("%s\n", final);
+
+        final[finLen + 1] = '-';
+        printf("%s\n", final);
+
+        final[finLen + 1] = '*';
+        printf("%s\n", final);
+
+        final[finLen + 1] = rest[1];
+        final[finLen + 2] = '\0';
+        printf("%s\n", final);
+
+        //printf("\nPrinting old way:\n");
+        //printf("%s%c+%c\n", beginning, rest[0], rest[1]);
+        //printf("%s%c-%c\n", beginning, rest[0], rest[1]);
+        //printf("%s%c*%c\n", beginning, rest[0], rest[1]);
+        //printf("%s%c%c\n", beginning, rest[0], rest[1]);
+    } else {
         char tmp[25];
         unsigned long begLen = strlen(beginning);
 
