@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 int readNumbers(char *input) {
@@ -18,6 +19,58 @@ int readResult(int *result, char* requestType) {
     //printf("C: \"%c\"\n", c);
     if (res == EOF) return -1;
     if (res != 3 || (*requestType!='?' && *requestType!='#') || c!='\n') return 1;
+    return 0;
+}
+
+int calculateString(char *str) {
+
+    printf("String is: %s\n", str);
+    unsigned long long len = strlen(str);
+
+    int sum = 0;
+    int currSign = 0, nextSign = 0;
+
+    // vypocet
+    for (int i=0; i<len; i++) {
+        // ak narazim na zna ktory nie je krat
+        if (str[i] == '+' || str[i] == '-') {
+            nextSign = i;
+            while (isdigit(str[++nextSign]));
+            // pozrieme ci je next znak krat
+            if (str[nextSign]=='*') {
+                int Msum = 1;
+                printf("Zaciatok nasobenia%d\n", currSign);
+                printf("Dalsi znak:%d\n", nextSign);
+
+                Msum *= atoi(str + currSign);
+                printf("Clen nasobenia: %d\n", atoi(str + currSign));
+                currSign = nextSign+1;
+
+                while (str[++nextSign]!='+'&&str[nextSign]!='-') {
+                    if (str[nextSign]=='*') {
+                        Msum *= atoi(str + currSign);
+                        printf("Clen nasobenia: %d\n", atoi(str + currSign));
+                        //printf("Indec nasobenia: %d\n", currSign);
+                        currSign = nextSign+1;
+                    }
+                }
+                Msum *= atoi(str + currSign);
+                printf("Clen nasobenia: %d\n", atoi(str + currSign));
+                currSign = nextSign;
+
+                printf("Vysledok nasobenia: %d\n", Msum);
+                sum += Msum;
+            } else {
+                // scitanie
+                sum += atoi(str+currSign);
+                printf("Scitavam: %d ", atoi(str+currSign));
+                currSign = nextSign;
+            }
+        }
+
+    }
+
+    printf("\nSum is %d\n", sum);
     return 0;
 }
 
@@ -82,33 +135,35 @@ void findAllCombinations(char *beginning, char *rest) {
 };
 
 int main(void) {
-    // premenne
-    char requestType, input[14];
-    int result;
 
-    // Nacitanie cislic
-    printf("Cislice:\n");
-    if (readNumbers(input)) {
-        printf("Nespravny vstup.");
-        return 1;
-    }
-
-    // Nacitanie a spracovanie problemov
-    printf("Problemy:\n");
-    int scanRes;
-    while ((scanRes = readResult(&result, &requestType))==0) {
-        // Debug vypis
-        //printf("===========\nZadane cisla %s\n", input);
-        //printf("Vysledok %d\n", result);
-        //printf("Typ: %c\n\n", requestType);
-
-        // Funkcia na spracovanie vstupov
-        char test[2]="";
-        findAllCombinations(test, input);
-    }
-    if (scanRes != -1) {
-        printf("Nespravny vstup.");
-        return 1;
-    }
+    calculateString("+23*45-6-7*12*3");
+    // // premenne
+    // char requestType, input[14];
+    // int result;
+    //
+    // // Nacitanie cislic
+    // printf("Cislice:\n");
+    // if (readNumbers(input)) {
+    //     printf("Nespravny vstup.");
+    //     return 1;
+    // }
+    //
+    // // Nacitanie a spracovanie problemov
+    // printf("Problemy:\n");
+    // int scanRes;
+    // while ((scanRes = readResult(&result, &requestType))==0) {
+    //     // Debug vypis
+    //     //printf("===========\nZadane cisla %s\n", input);
+    //     //printf("Vysledok %d\n", result);
+    //     //printf("Typ: %c\n\n", requestType);
+    //
+    //     // Funkcia na spracovanie vstupov
+    //     char test[2]="";
+    //     findAllCombinations(test, input);
+    // }
+    // if (scanRes != -1) {
+    //     printf("Nespravny vstup.");
+    //     return 1;
+    // }
     return 0;
 }
