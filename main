@@ -3,6 +3,39 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct {
+    char str[25];
+    int value;
+}TExpression;
+
+typedef struct {
+    TExpression *data;
+    int length;
+    int capacity;
+}TExprArr;
+
+void initArr(TExprArr *arr) {
+    arr->data = (TExpression *)malloc(sizeof(TExpression));
+    arr->capacity = 1;
+    arr->length = 0;
+}
+
+void freeArr(TExprArr *arr) {
+    free(arr->data);
+    arr->data = NULL;
+    arr->capacity = arr->length = 0;
+}
+
+void appendArr(TExprArr *arr, int value, char *str) {
+    if (arr->length == arr->capacity) {
+        arr->capacity *= 2;
+        arr->data = (TExpression *)realloc(arr->data, arr->capacity * sizeof(TExpression));
+    }
+    arr->data[arr->length].value = value;
+    strcpy(arr->data[arr->length].str, str);
+    arr->length++;
+}
+
 int readNumbers(char *input) {
     if (scanf("%13s", input) != 1) return 1;
     const unsigned long long len = strlen(input);
@@ -24,14 +57,14 @@ int readResult(int *result, char* requestType) {
 
 int calculateString(char *str) {
 
-    printf("String is: %s\n", str);
+    //printf("String is: %s\n", str);
     unsigned long long len = strlen(str);
 
     int sum = 0;
     int currSign = 0, nextSign = 0;
 
     // vypocet
-    for (int i=0; i<len; i++) {
+    for (unsigned long long i=0; i<len; i++) {
         // ak narazim na zna ktory nie je krat
         if (str[i] == '+' || str[i] == '-') {
             nextSign = i;
@@ -39,42 +72,42 @@ int calculateString(char *str) {
             // pozrieme ci je next znak krat
             if (str[nextSign]=='*') {
                 int Msum = 1;
-                printf("Zaciatok nasobenia%d\n", currSign);
-                printf("Dalsi znak:%d\n", nextSign);
+                //printf("Zaciatok nasobenia%d\n", currSign);
+                //printf("Dalsi znak:%d\n", nextSign);
 
                 Msum *= atoi(str + currSign);
-                printf("Clen nasobenia: %d\n", atoi(str + currSign));
+                //printf("Clen nasobenia: %d\n", atoi(str + currSign));
                 currSign = nextSign+1;
 
-                while (str[++nextSign]!='+'&&str[nextSign]!='-') {
+                while (str[++nextSign]!='+'&&str[nextSign]!='-' &&str[nextSign]!='\0') {
                     if (str[nextSign]=='*') {
                         Msum *= atoi(str + currSign);
-                        printf("Clen nasobenia: %d\n", atoi(str + currSign));
+                        //printf("Clen nasobenia: %d\n", atoi(str + currSign));
                         //printf("Indec nasobenia: %d\n", currSign);
                         currSign = nextSign+1;
                     }
                 }
                 Msum *= atoi(str + currSign);
-                printf("Clen nasobenia: %d\n", atoi(str + currSign));
+                //printf("Clen nasobenia: %d\n", atoi(str + currSign));
                 currSign = nextSign;
 
-                printf("Vysledok nasobenia: %d\n", Msum);
+                //printf("Vysledok nasobenia: %d\n", Msum);
                 sum += Msum;
             } else {
                 // scitanie
                 sum += atoi(str+currSign);
-                printf("Scitavam: %d ", atoi(str+currSign));
+                //printf("Scitavam: %d ", atoi(str+currSign));
                 currSign = nextSign;
             }
         }
 
     }
 
-    printf("\nSum is %d\n", sum);
-    return 0;
+    //printf("\nSum is %d\n", sum);
+    return sum;
 }
 
-void findAllCombinations(char *beginning, char *rest) {
+void findAllCombinations(char *beginning, char *rest, TExprArr *arr) {
     if (strlen(rest) == 2) {
         char final[25];
         unsigned long finLen = strlen(beginning);
@@ -86,17 +119,21 @@ void findAllCombinations(char *beginning, char *rest) {
         //printf("\nPrinting new way:\n");
 
         final[finLen + 1] = '+';
-        printf("%s\n", final);
+        appendArr(arr, calculateString(final), final+1);
+        //printf("= %s\n", final+1);
 
         final[finLen + 1] = '-';
-        printf("%s\n", final);
+        appendArr(arr, calculateString(final), final+1);
+        //printf("= %s\n", final+1);
 
         final[finLen + 1] = '*';
-        printf("%s\n", final);
+        appendArr(arr, calculateString(final), final+1);
+        //printf("= %s\n", final+1);
 
         final[finLen + 1] = rest[1];
         final[finLen + 2] = '\0';
-        printf("%s\n", final);
+        appendArr(arr, calculateString(final), final+1);
+        //printf("= %s\n", final+1);
 
         //printf("\nPrinting old way:\n");
         //printf("%s%c+%c\n", beginning, rest[0], rest[1]);
@@ -111,59 +148,78 @@ void findAllCombinations(char *beginning, char *rest) {
         tmp[begLen] = rest[0];
         tmp[begLen+1] = '+';
         tmp[begLen+2] = '\0';
-        findAllCombinations(tmp, rest+1);
+        findAllCombinations(tmp, rest+1, arr);
 
         strcpy(tmp, beginning);
         tmp[begLen] = rest[0];
         tmp[begLen+1] = '-';
         tmp[begLen+2] = '\0';
-        findAllCombinations(tmp, rest+1);
+        findAllCombinations(tmp, rest+1, arr);
 
         strcpy(tmp, beginning);
         tmp[begLen] = rest[0];
         tmp[begLen+1] = '*';
         tmp[begLen+2] = '\0';
-        findAllCombinations(tmp, rest+1);
+        findAllCombinations(tmp, rest+1, arr);
 
         strcpy(tmp, beginning);
         tmp[begLen] = rest[0];
         //tmp[begLen+1] = '_';
         tmp[begLen+1] = '\0';
-        findAllCombinations(tmp, rest+1);
+        findAllCombinations(tmp, rest+1, arr);
 
     }
 };
 
 int main(void) {
 
-    calculateString("+23*45-6-7*12*3");
-    // // premenne
-    // char requestType, input[14];
-    // int result;
-    //
-    // // Nacitanie cislic
-    // printf("Cislice:\n");
-    // if (readNumbers(input)) {
-    //     printf("Nespravny vstup.");
-    //     return 1;
-    // }
-    //
-    // // Nacitanie a spracovanie problemov
-    // printf("Problemy:\n");
-    // int scanRes;
-    // while ((scanRes = readResult(&result, &requestType))==0) {
-    //     // Debug vypis
-    //     //printf("===========\nZadane cisla %s\n", input);
-    //     //printf("Vysledok %d\n", result);
-    //     //printf("Typ: %c\n\n", requestType);
-    //
-    //     // Funkcia na spracovanie vstupov
-    //     char test[2]="";
-    //     findAllCombinations(test, input);
-    // }
-    // if (scanRes != -1) {
-    //     printf("Nespravny vstup.");
-    //     return 1;
-    // }
+    //char testikos[20] = "+29-6-5+3*8";
+    //printf("VYSLEDOK: %d\n",calculateString(testikos));
+    // premenne
+    char requestType, input[15];
+    int result;
+
+    // Nacitanie cislic
+    printf("Cislice:\n");
+    if (readNumbers(input)) {
+        printf("Nespravny vstup.");
+        return 1;
+    }
+
+    TExprArr arr;
+    initArr(&arr);
+    char startingStr[2]="+";
+    findAllCombinations(startingStr, input, &arr);
+
+    // Nacitanie a spracovanie problemov
+    printf("Problemy:\n");
+    int scanRes;
+    while ((scanRes = readResult(&result, &requestType))==0) {
+        // Debug vypis
+        //printf("===========\nZadane cisla %s\n", input);
+        //printf("Vysledok %d\n", result);
+        //printf("Typ: %c\n\n", requestType);
+
+        // Funkcia na spracovanie vstupov
+        //printf("==========\nTarget = %d\n", result);
+        int count = 0;
+
+        for (int i=0; i<arr.length; i++) {
+            if (arr.data[i].value == result) {
+                if (requestType == '?') {
+                    printf("= %s\n",arr.data[i].str);
+                }
+                count++;
+            }
+        }
+
+        printf("Celkem: %d\n", count);
+    }
+    if (scanRes != -1) {
+        printf("Nespravny vstup.");
+        freeArr(&arr);
+        return 1;
+    }
+    freeArr(&arr);
     return 0;
 }
